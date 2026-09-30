@@ -10,9 +10,34 @@ class Medicamento:
         self._validade = validade
         self._quantidade = quantidade
         self._valor = valor
-    
-    
 
+        """"Implemente um método de classe (@classmethod) chamado de_registro(), que receba
+        uma única string no formato "nome;lote;validade;quantidade;valor" (com a validade em formato
+        ISO, "AAAA-MM-DD") e retorne uma instância de Medicamento já construída a partir desses
+        dados. 
+        
+        Implemente também um método estático (@staticmethod) chamado
+        dias_para_vencer(), que receba uma data de validade (date) e devolva, como int, a
+        quantidade de dias entre a data atual (date.today()) e essa validade, sem depender de
+        nenhuma instância da classe."""
+
+    @staticmethod
+    def dias_para_vencer (validade:date) -> int:
+        dias = validade - date.today()
+        return dias.days
+
+    @classmethod
+    def de_registro (cls, registro:str) -> Medicamento:
+        nome,lote,validade,quantidade,valor = registro.split(';')
+        validade = date.fromisoformat(validade)
+        return cls (nome, lote, validade, int(quantidade), float(valor))
+    
+    def __str__(self) -> str:
+        return f"Nome: {self._nome}, Lote: {self._lote}, Validade: {self._validade}, Quantidade: {self._quantidade}, Valor: {self._valor}"
+
+'''medicamento = Medicamento.de_registro('dipirona;5555555;2026-10-26;6;35.2')
+print(medicamento)'''
+print(Medicamento.dias_para_vencer(date(2026,10,26)))
 
 # if __name__ == "__main__":
 # m1 = Medicamento("Dipirona 500mg", "L2026A", date(2026, 12, 31), 100, 12.50)
