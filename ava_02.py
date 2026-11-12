@@ -31,13 +31,17 @@ class Atendimento(ABC):
         pass
     
     def __str__(self):
-        return f'Tipo: {self.tipo} \n Paciente: {Paciente} \n Duração: {self.duracao_minutos()}'
+        pass
+        #return f'Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
 
 class Consulta (Atendimento):
     def __init__(self, paciente: Paciente, especialidade:str, retorno: bool = False):
         super().__init__(paciente)
         self.retorno = retorno
         self.especialidade = especialidade
+
+    def __str__(self):
+        return f'Especialidade: {self.especialidade} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
 
     def duracao_minutos(self)->int:
         if self.retorno == False:
@@ -57,7 +61,10 @@ class Exame (Atendimento):
             return 20
         else:
             return 30
-        
+
+    def __str__(self):
+            return f'Tipo: {self.tipo} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
+    
 class Vacinacao (Atendimento):
 
     def __init__(self, paciente: Paciente, vacina:str, doses:int = 1):
@@ -68,14 +75,17 @@ class Vacinacao (Atendimento):
     def duracao_minutos(self)->int:
         return self.doses * 10
 
+    def __str__(self):
+            return f'Vacina: {self.vacina} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
+
 class Agenda():
-    def __int__(self):
+    def __init__(self):
         self.limite_minutos:int = 240
         self._lista_de_atendimentos:list[Atendimento] = []
 
     @property
     def atendimentos(self) -> list[Atendimento]:
-        return self._lista_de_atendimentos
+        return tuple(self._lista_de_atendimentos)
 
     @property
     def minutos_ocupados(self) -> int:
@@ -84,12 +94,12 @@ class Agenda():
         for atendimento in self._lista_de_atendimentos:
             self.minutos_total = atendimento.duracao_minutos()
 
-        return self.minutos_total
+        return minutos_total
 
     def agendar(self, atendimento: Atendimento) -> None:
         try:
             if atendimento.paciente.agendado == False:
-                if atendimento.duracao_minutos() <= self.limite_minutos - self.minutos_ocupados():
+                if atendimento.duracao_minutos() <= self.limite_minutos - self.minutos_ocupados:
                     self._lista_de_atendimentos.append(atendimento)
                 else:
                     raise HorarioIndisponivelError()
@@ -97,5 +107,3 @@ class Agenda():
                 raise PacienteJaAgendadoError()
         except Exception as erro:
             print(erro)
-        
-    
