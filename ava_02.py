@@ -8,11 +8,11 @@ class AgendaError(Exception):
         super().__init__(text)
 
 class HorarioIndisponivelError(AgendaError):
-    def __init__(self, text):
+    def __init__(self):
         super().__init__("Este horário esta indisponível no momento !!")
 
 class PacienteJaAgendadoError(AgendaError):
-    def __init__(self, text):
+    def __init__(self):
         super().__init__("Este paciente ja foi agendado !!")
 
 
@@ -79,8 +79,8 @@ class Vacinacao (Atendimento):
             return f'Vacina: {self.vacina} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
 
 class Agenda():
-    def __init__(self):
-        self.limite_minutos:int = 240
+    def __init__(self, limite_minutos:int = 240):
+        self.limite_minutos = limite_minutos
         self._lista_de_atendimentos:list[Atendimento] = []
 
     @property
@@ -92,7 +92,7 @@ class Agenda():
         minutos_total:int = 0
 
         for atendimento in self._lista_de_atendimentos:
-            self.minutos_total = atendimento.duracao_minutos()
+            minutos_total += atendimento.duracao_minutos()
 
         return minutos_total
 
@@ -107,3 +107,10 @@ class Agenda():
                 raise PacienteJaAgendadoError()
         except Exception as erro:
             print(erro)
+
+agenda = Agenda(limite_minutos=59)
+
+for numero in range(2):                           # 8 x 30 = 240 exatos
+    agenda.agendar(Consulta(Paciente(f"P{numero}", str(numero)), "CG"))
+
+print(agenda.minutos_ocupados)
