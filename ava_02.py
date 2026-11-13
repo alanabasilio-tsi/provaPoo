@@ -24,15 +24,18 @@ class Paciente():
 
 class Atendimento(ABC):
     def __init__(self, paciente: Paciente):
-        self.paciente = paciente
+        self.__paciente = paciente
+
+    @property
+    def paciente (self):
+        return self.__paciente
 
     @abstractmethod
     def duracao_minutos(self)->int:
         pass
     
     def __str__(self):
-        pass
-        #return f'Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
+        return f'Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
 
 class Consulta (Atendimento):
     def __init__(self, paciente: Paciente, especialidade:str, retorno: bool = False):
@@ -41,7 +44,7 @@ class Consulta (Atendimento):
         self.especialidade = especialidade
 
     def __str__(self):
-        return f'Especialidade: {self.especialidade} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
+        return f'Consulta - Especialidade: {self.especialidade} \n {super().__str__()}'
 
     def duracao_minutos(self)->int:
         if self.retorno == False:
@@ -63,7 +66,7 @@ class Exame (Atendimento):
             return 30
 
     def __str__(self):
-            return f'Tipo: {self.tipo} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
+            return f'Exame - Tipo: {self.tipo} \n {super().__str__()}'
     
 class Vacinacao (Atendimento):
 
@@ -76,7 +79,7 @@ class Vacinacao (Atendimento):
         return self.doses * 10
 
     def __str__(self):
-            return f'Vacina: {self.vacina} \n Paciente: {self.paciente.nome} \n Duração: {self.duracao_minutos()}'
+            return f'Vacinacao - Vacina: {self.vacina} \n {super().__str__()}'
 
 class Agenda():
     def __init__(self, limite_minutos:int = 240):
