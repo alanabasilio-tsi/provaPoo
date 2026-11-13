@@ -89,13 +89,13 @@ verificar("atributos específicos guardados",
           and Exame(ana, "Glicemia").tipo == "Glicemia"
           and Vacinacao(ana, "Influenza").vacina == "Influenza")
 verificar("paciente exposto pela property", Consulta(ana, "X").paciente == ana)
-#verificar("paciente é somente leitura",
-#         levanta(AttributeError, lambda: setattr(Consulta(ana, "X"), "paciente", leo)) is not None)
-# for obj in (Consulta(ana, "X"), Exame(ana, "X"), Vacinacao(ana, "X")):
-#     texto = str(obj)
-#     verificar(f"__str__ de {type(obj).__name__}: tipo + paciente + duração",
-#               type(obj).__name__ in texto and "Ana Souza" in texto
-#               and str(obj.duracao_minutos()) in texto)
+verificar("paciente é somente leitura",
+         levanta(AttributeError, lambda: setattr(Consulta(ana, "X"), "paciente", leo)) is not None)
+for obj in (Consulta(ana, "X"), Exame(ana, "X"), Vacinacao(ana, "X")):
+    texto = str(obj)
+    verificar(f"__str__ de {type(obj).__name__}: tipo + paciente + duração",
+        type(obj).__name__ in texto and "Ana Souza" in texto 
+        and str(obj.duracao_minutos()) in texto)
 
 
 # ---------------------------------------------------------------- item c ----------------------------------------------------------------
