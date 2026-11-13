@@ -121,18 +121,18 @@ cheia = Agenda()                                  # limite padrão = 240
 for numero in range(8):                           # 8 x 30 = 240 exatos
     cheia.agendar(Consulta(Paciente(f"P{numero}", str(numero)), "CG"))
 verificar("limite padrão 240: 8 consultas (240 min) cabem", cheia.minutos_ocupados == 240)
-# verificar("limite padrão 240: a 9ª não cabe",
-#           levanta(HorarioIndisponivelError,
-#                   lambda: cheia.agendar(Consulta(Paciente("P9", "9"), "CG"))) is not None)
+verificar("limite padrão 240: a 9ª não cabe",
+           levanta(HorarioIndisponivelError,
+                   lambda: cheia.agendar(Consulta(Paciente("P9", "9"), "CG"))) is not None)
 
 secao("d) Agenda: fronteira do limite")
 limite = Agenda(limite_minutos=60)
 limite.agendar(Consulta(ana, "CG"))
 limite.agendar(Exame(leo, "G", jejum=True))
 verificar("soma exatamente igual ao limite é ACEITA (60 de 60)", limite.minutos_ocupados == 60)
-# verificar("1 minuto a mais é REJEITADO (61 > 60)",
-#           levanta(HorarioIndisponivelError,
-#                   lambda: limite.agendar(Vacinacao(rui, "I"))) is not None)
+verificar("1 minuto a mais é REJEITADO (61 > 60)",
+          levanta(HorarioIndisponivelError,
+                  lambda: limite.agendar(Vacinacao(rui, "I"))) is not None)
 quase = Agenda(limite_minutos=59)
 quase.agendar(Consulta(ana, "CG"))                # 30
 verificar("limite 59: 30 + 30 = 60 estoura por 1 minuto",

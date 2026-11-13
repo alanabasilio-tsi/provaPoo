@@ -8,19 +8,21 @@ class AgendaError(Exception):
         super().__init__(text)
 
 class HorarioIndisponivelError(AgendaError):
-    def __init__(self):
-        super().__init__("Este horário esta indisponível no momento !!")
+    def __init__(self, minutos_restantes, duracao):
+        super().__init__(f"Este atendimento tem duração de {duracao} minutos, mas só {minutos_restantes} minutos estão disponíveis no momento !!")
 
 class PacienteJaAgendadoError(AgendaError):
-    def __init__(self):
-        super().__init__("Este paciente ja foi agendado !!")
+    def __init__(self, paciente):
+        super().__init__(f"O paciente que se chama {paciente.nome} ja está agendado !!")
 
 
 @dataclass(frozen=True)
 class Paciente():
     nome:str
     cartao_sus:str
-    agendado:bool = False
+
+    def agendar_true(self):
+        self.agendado = True
 
 class Atendimento(ABC):
     def __init__(self, paciente: Paciente):
@@ -81,36 +83,44 @@ class Vacinacao (Atendimento):
 class Agenda():
     def __init__(self, limite_minutos:int = 240):
         self.limite_minutos = limite_minutos
-        self._lista_de_atendimentos:list[Atendimento] = []
+        self._atendimentos:list[Atendimento] = []
 
     @property
     def atendimentos(self) -> list[Atendimento]:
-        return tuple(self._lista_de_atendimentos)
+        return tuple(self._atendimentos)
 
     @property
     def minutos_ocupados(self) -> int:
         minutos_total:int = 0
 
-        for atendimento in self._lista_de_atendimentos:
+        for atendimento in self._atendimentos:
             minutos_total += atendimento.duracao_minutos()
 
         return minutos_total
 
     def agendar(self, atendimento: Atendimento) -> None:
-        try:
-            if atendimento.paciente.agendado == False:
-                if atendimento.duracao_minutos() <= self.limite_minutos - self.minutos_ocupados:
-                    self._lista_de_atendimentos.append(atendimento)
-                else:
-                    raise HorarioIndisponivelError()
+        agendado:bool = False
+        minutos_restantes: int = self.limite_minutos - self.minutos_ocupados
+
+        for atendimento_lista in self._atendimentos:
+            if atendimento.paciente == atendimento_lista.paciente:
+                agendado = True
+                break
+
+        if agendado == False:
+            if atendimento.duracao_minutos() <= minutos_restantes:
+                self._atendimentos.append(atendimento)
             else:
-                raise PacienteJaAgendadoError()
-        except Exception as erro:
-            print(erro)
+                raise HorarioIndisponivelError(minutos_restantes, atendimento.duracao_minutos())
+        else:
+            raise PacienteJaAgendadoError(atendimento.paciente)
 
-agenda = Agenda(limite_minutos=59)
-
-for numero in range(2):                           # 8 x 30 = 240 exatos
-    agenda.agendar(Consulta(Paciente(f"P{numero}", str(numero)), "CG"))
-
-print(agenda.minutos_ocupados)
+# try:
+#     agenda = Agenda(limite_minutos=59)
+#     p1 = Paciente("Gabriel", "2KH123B")
+#     agenda.agendar(Exame(p1,"Dengue"))
+#     agenda.agendar(Consulta(p1,"Zika"))
+#     print(agenda.atendimentos)
+#     print(agenda.minutos_ocupados)
+# except Exception as error:
+#     print(error)
